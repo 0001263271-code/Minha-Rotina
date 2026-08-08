@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Rotina & Metas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Minha Rotina & Foco</h1>
+    <p>Meta: Recomposição Corporal & Equilíbrio</p>
+  </header>
+
+  <main class="container">
+    
+    <!-- CARD: LINHA DO TEMPO -->
+    <section class="card">
+      <h2>📅 Cronograma Diário</h2>
+      <ul class="timeline">
+        <li><span>07:00</span> Acordar + Café da manhã proteico</li>
+        <li><span>08:00 - 17:30</span> Trabalho (Lembrete: Água + Passos)</li>
+        <li class="highlight"><span>17:30 - 18:30</span> Treino HIIT (20 min) + Lanche Pré-Curso</li>
+        <li><span>19:00 - 22:00</span> Curso</li>
+        <li><span>22:00</span> Jantar leve + Descanso</li>
+      </ul>
+    </section>
+
+    <!-- CARD: TREINO RÁPIDO -->
+    <section class="card">
+      <h2>⚡ Treino HIIT 20 Min</h2>
+      <p class="subtitle">3 a 4 voltas (45s cada exercício / 1m descanso)</p>
+      <ul class="checklist">
+        <li><label><input type="checkbox"> 45s Agachamento</label></li>
+        <li><label><input type="checkbox"> 45s Polichinelo</label></li>
+        <li><label><input type="checkbox"> 45s Prancha Abdominal</label></li>
+        <li><label><input type="checkbox"> 45s Afundo Alternado</label></li>
+      </ul>
+    </section>
+
+    <!-- CARD: CONTADOR DE ÁGUA -->
+    <section class="card">
+      <h2>💧 Contador de Água</h2>
+      <p class="subtitle">Meta: 2000 ml (2 Litros)</p>
+      <div class="water-controls">
+        <button id="add-water">+ 250ml</button>
+        <button id="reset-water" class="btn-secondary">Zerar</button>
+      </div>
+      <div class="water-progress-bar">
+        <div id="water-fill" style="width: 0%;"></div>
+      </div>
+      <p class="result-text"><span id="water-amount">0</span> / 2000 ml</p>
+    </section>
+
+    <!-- CARD: METAS SEMANAIS -->
+    <section class="card">
+      <h2>🎯 Metas da Semana</h2>
+      <ul class="checklist">
+        <li><label><input type="checkbox"> Treinar 3x na semana (HIIT)</label></li>
+        <li><label><input type="checkbox"> Beber 2L de água todos os dias</label></li>
+        <li><label><input type="checkbox"> Trocar o açaí tradicional pelo Fit (1-2x)</label></li>
+        <li><label><input type="checkbox"> Preparar marmitas no fim de semana</label></li>
+      </ul>
+    </section>
+
+    <!-- CARD: MONTE SEU AÇAÍ SAUDÁVEL -->
+    <section class="card">
+      <h2>🍧 Montador de Açaí Fit</h2>
+      <form id="acai-form">
+        <label for="base">Base:</label>
+        <select id="base">
+          <option value="110">Polpa Pura / Zero (110 kcal)</option>
+          <option value="250">Com Xarope Tradicional (250 kcal)</option>
+        </select>
+
+        <label for="proteina">Proteína:</label>
+        <select id="proteina">
+          <option value="100">1 Dose de Whey Protein (+100 kcal)</option>
+          <option value="0">Nenhum (0 kcal)</option>
+        </select>
+
+        <label for="topping">Acompanhamento:</label>
+        <select id="topping">
+          <option value="40">Morangos / Banana (+40 kcal)</option>
+          <option value="130">Leite em Pó (+130 kcal)</option>
+          <option value="120">Leite Condensado (+120 kcal)</option>
+        </select>
+
+        <div class="result">
+          Total estimado: <strong id="total-cal">250</strong> kcal
+        </div>
+      </form>
+    </section>
+
+  </main>
+
+  <script>
+    // 1. CALCULADORA DE AÇAÍ
+    const base = document.getElementById('base');
+    const proteina = document.getElementById('proteina');
+    const topping = document.getElementById('topping');
+    const totalCal = document.getElementById('total-cal');
+
+    function calcularCalorias() {
+      const total = parseInt(base.value) + parseInt(proteina.value) + parseInt(topping.value);
+      totalCal.textContent = total;
+    }
+
+    base.addEventListener('change', calcularCalorias);
+    proteina.addEventListener('change', calcularCalorias);
+    topping.addEventListener('change', calcularCalorias);
+
+    // 2. CONTADOR DE ÁGUA COM SALVAMENTO
+    const goalWater = 2000;
+    const waterAmountEl = document.getElementById('water-amount');
+    const waterFillEl = document.getElementById('water-fill');
+    const addWaterBtn = document.getElementById('add-water');
+    const resetWaterBtn = document.getElementById('reset-water');
+
+    let currentWater = parseInt(localStorage.getItem('waterAmount')) || 0;
+
+    function updateWaterUI() {
+      waterAmountEl.textContent = currentWater;
+      const percentage = (currentWater / goalWater) * 100;
+      waterFillEl.style.width = percentage + '%';
+      localStorage.setItem('waterAmount', currentWater);
+    }
+
+    addWaterBtn.addEventListener('click', () => {
+      if (currentWater < goalWater) {
+        currentWater += 250;
+        if (currentWater > goalWater) currentWater = goalWater;
+        updateWaterUI();
+      }
+    });
+
+    resetWaterBtn.addEventListener('click', () => {
+      currentWater = 0;
+      updateWaterUI();
+    });
+
+    updateWaterUI();
+
+    // 3. CHECKBOXES COM SALVAMENTO
+    const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+
+    checkboxes.forEach((checkbox, index) => {
+      const savedState = localStorage.getItem(`checkbox_${index}`);
+      if (savedState === 'true') {
+        checkbox.checked = true;
+      }
+
+      checkbox.addEventListener('change', () => {
+        localStorage.setItem(`checkbox_${index}`, checkbox.checked);
+      });
+    });
+  </script>
+
+</body>
+</html>
